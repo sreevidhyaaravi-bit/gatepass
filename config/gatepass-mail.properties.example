@@ -1,0 +1,41 @@
+# ---------------------------------------------------------------------------
+# Parent email settings for the Digital Gate Pass system (the ONE place for SMTP settings)
+#
+# 1. Copy this file and name the copy exactly:  gatepass-mail.properties
+# 2. Put the copy in the SAME folder as gatepass.db. By default that is:
+#       Windows:  C:\Users\<you>\gatepass-data\gatepass-mail.properties
+#       macOS:    /Users/<you>/gatepass-data/gatepass-mail.properties
+#    (or point to it with  -Dgatepass.mail.config=...  or the GATEPASS_MAIL_CONFIG variable)
+# 3. Fill in ONE of the two options below, then restart the website and the guard app.
+#
+# NEVER commit the real file to Git (it is listed in .gitignore). It contains a password.
+# If this file is missing, everything still works; the guard app just says "email not sent".
+# ---------------------------------------------------------------------------
+
+# ---- Option A: real emails through Gmail ----------------------------------
+# Needs a Gmail account with 2-Step Verification ON and an "App password"
+# (Google Account > Security > App passwords). Use the 16-letter app password,
+# NOT the normal Gmail password.
+smtp.host=smtp.gmail.com
+smtp.port=587
+smtp.security=STARTTLS
+smtp.username=your.team.address@gmail.com
+smtp.password=abcd efgh ijkl mnop
+mail.from=your.team.address@gmail.com
+mail.from.name=Hostel Gate Office
+
+# ---- Option B: local test inbox, no internet (Mailpit) ---------------------
+# Run mailpit.exe, then open http://localhost:8025 to see every email.
+# Use these lines instead of Option A (delete or comment out the Option A lines):
+#smtp.host=localhost
+#smtp.port=1025
+#smtp.security=NONE
+#smtp.username=
+#smtp.password=
+#mail.from=gatepass@college.test
+#mail.from.name=Hostel Gate Office
+
+# Optional: wait at most this long for the mail server (milliseconds)
+smtp.timeout.ms=15000
+# Optional: set to false to switch parent emails off without deleting this file
+mail.enabled=true

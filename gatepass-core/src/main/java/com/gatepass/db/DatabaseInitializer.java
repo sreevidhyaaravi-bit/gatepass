@@ -147,15 +147,39 @@ public final class DatabaseInitializer {
         initialize(clock);
     }
 
-    /** Command line helper: {@code java -cp ... com.gatepass.db.DatabaseInitializer [init|refresh|reset]}. */
+    /**
+     * Command line helper:
+     * <pre>
+     * java -cp ... com.gatepass.db.DatabaseInitializer init|refresh|reset
+     * java -cp ... com.gatepass.db.DatabaseInitializer parent-email CS24001 someone@example.com
+     * </pre>
+     * {@code parent-email} points a demo parent at an inbox the team can open, so the exit and
+     * return emails can be shown arriving. ({@code refresh} keeps it; {@code reset} restores the
+     * fictional example.test addresses.)
+     */
     public static void main(String[] args) {
         String mode = args.length == 0 ? "init" : args[0];
         switch (mode) {
             case "init" -> initialize();
-            case "refresh" -> refreshDemoPasses();
+            case "refresh" -> {
+                initialize();
+                refreshDemoPasses();
+            }
             case "reset" -> resetEverything();
+            case "parent-email" -> {
+                if (args.length != 3 || !args[2].matches("[^@\\s]+@[^@\\s]+\\.[^@\\s]+")) {
+                    System.err.println("Usage: DatabaseInitializer parent-email <collegeId> <email address>");
+                    return;
+                }
+                initialize();
+                if (!USER_DAO.updateParentEmail(args[1], args[2])) {
+                    System.err.println("Student not found: " + args[1]);
+                    return;
+                }
+                System.out.println("Parent email of " + args[1].toUpperCase() + " is now " + args[2]);
+            }
             default -> {
-                System.err.println("Usage: DatabaseInitializer [init|refresh|reset]");
+                System.err.println("Usage: DatabaseInitializer [init|refresh|reset|parent-email <collegeId> <email>]");
                 return;
             }
         }

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Packaging only (no Java code). After "mvn package" you get:
+    gatepass-dist/target/GatePass-Demo/      ready-to-run folder (double-click the .bat files on Windows)
+    gatepass-dist/target/GatePass-Demo.zip   the same folder as one file, to share with the team
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.gatepass</groupId>
+        <artifactId>gatepass-parent</artifactId>
+        <version>1.0.0</version>
+    </parent>
+
+    <artifactId>gatepass-dist</artifactId>
+    <packaging>pom</packaging>
+    <name>Gate Pass Demo Package</name>
+
+    <!-- Listed only so Maven builds these modules first -->
+    <dependencies>
+        <dependency>
+            <groupId>com.gatepass</groupId>
+            <artifactId>gatepass-web</artifactId>
+            <version>${project.version}</version>
+            <type>war</type>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.gatepass</groupId>
+            <artifactId>gatepass-guard</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.gatepass</groupId>
+            <artifactId>gatepass-launcher</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>assemble-demo-folder</id>
+                        <phase>package</phase>
+                        <goals><goal>run</goal></goals>
+                        <configuration>
+                            <target>
+                                <property name="out" value="${project.build.directory}/GatePass-Demo"/>
+                                <property name="root" value="${project.basedir}/.."/>
+                                <delete dir="${out}"/>
+
+                                <copy todir="${out}/website">
+                                    <fileset dir="${root}/gatepass-web/target/ROOT"/>
+                                </copy>
+                                <copy file="${root}/gatepass-web/target/ROOT.war" todir="${out}"/>
+                                <copy file="${root}/gatepass-launcher/target/gatepass-launcher.jar" todir="${out}/server"/>
+                                <copy todir="${out}/server/lib">
+                                    <fileset dir="${root}/gatepass-launcher/target/lib"/>
+                                </copy>
+                                <copy file="${root}/gatepass-guard/target/gatepass-guard.jar" todir="${out}/guard"/>
+                                <copy todir="${out}/guard/lib">
+                                    <fileset dir="${root}/gatepass-guard/target/lib"/>
+                                </copy>
+                                <copy todir="${out}">
+                                    <fileset dir="${project.basedir}/src/scripts"/>
+                                </copy>
+                                <copy file="${root}/config/gatepass-mail.properties.example" todir="${out}"/>
+
+                                <!-- Windows needs CRLF line endings in .bat files; macOS/Linux need LF in .sh -->
+                                <fixcrlf srcdir="${out}" includes="*.bat,*.txt,*.example" eol="crlf"/>
+                                <fixcrlf srcdir="${out}" includes="*.sh" eol="lf"/>
+                                <chmod perm="755">
+                                    <fileset dir="${out}" includes="*.sh"/>
+                                </chmod>
+
+                                <zip destfile="${project.build.directory}/GatePass-Demo.zip">
+                                    <zipfileset dir="${out}" prefix="GatePass-Demo" excludes="*.sh" filemode="644"/>
+                                    <zipfileset dir="${out}" prefix="GatePass-Demo" includes="*.sh" filemode="755"/>
+                                </zip>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

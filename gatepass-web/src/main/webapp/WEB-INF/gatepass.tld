@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- EL functions used by the JSP pages:  <%@ taglib prefix="gp" uri="http://gatepass.local/functions" %> -->
+<taglib xmlns="https://jakarta.ee/xml/ns/jakartaee"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-jsptaglibrary_3_0.xsd"
+        version="3.0">
+    <tlib-version>1.0</tlib-version>
+    <short-name>gp</short-name>
+    <uri>http://gatepass.local/functions</uri>
+
+    <function>
+        <description>Date-time for people, e.g. 30 Oct 2026, 04:05 PM ("-" when empty)</description>
+        <name>dt</name>
+        <function-class>com.gatepass.web.ViewFunctions</function-class>
+        <function-signature>java.lang.String dt(java.time.LocalDateTime)</function-signature>
+    </function>
+    <function>
+        <description>Duration, e.g. 2 h 15 min</description>
+        <name>duration</name>
+        <function-class>com.gatepass.web.ViewFunctions</function-class>
+        <function-signature>java.lang.String duration(java.time.Duration)</function-signature>
+    </function>
+    <function>
+        <description>How late a returned student was</description>
+        <name>lateBy</name>
+        <function-class>com.gatepass.web.ViewFunctions</function-class>
+        <function-signature>java.lang.String lateBy(com.gatepass.model.GatePass)</function-signature>
+    </function>
+</taglib>

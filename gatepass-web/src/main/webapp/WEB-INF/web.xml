@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Deployment descriptor of the website (Servlet 6.0 = Tomcat 10.1).
+  Servlets and the startup listener are registered with annotations (@WebServlet, @WebListener).
+  Filters are listed HERE because their ORDER matters and only web.xml guarantees an order:
+    1. SecurityFilter  (all pages)   UTF-8, safety headers, CSRF token check on POST
+    2. StudentOnly     (/student/*)  must be logged in as STUDENT
+    3. WardenOnly      (/warden/*)   must be logged in as WARDEN
+-->
+<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
+         version="6.0">
+
+    <display-name>Digital Gate Pass</display-name>
+
+    <filter>
+        <filter-name>SecurityFilter</filter-name>
+        <filter-class>com.gatepass.web.SecurityFilter</filter-class>
+    </filter>
+    <filter>
+        <filter-name>StudentOnly</filter-name>
+        <filter-class>com.gatepass.web.RoleFilter</filter-class>
+        <init-param>
+            <param-name>role</param-name>
+            <param-value>STUDENT</param-value>
+        </init-param>
+    </filter>
+    <filter>
+        <filter-name>WardenOnly</filter-name>
+        <filter-class>com.gatepass.web.RoleFilter</filter-class>
+        <init-param>
+            <param-name>role</param-name>
+            <param-value>WARDEN</param-value>
+        </init-param>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>SecurityFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>StudentOnly</filter-name>
+        <url-pattern>/student/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>WardenOnly</filter-name>
+        <url-pattern>/warden/*</url-pattern>
+    </filter-mapping>
+
+    <session-config>
+        <!-- log out automatically after 30 idle minutes -->
+        <session-timeout>30</session-timeout>
+        <cookie-config>
+            <http-only>true</http-only>
+            <attribute>
+                <attribute-name>SameSite</attribute-name>
+                <attribute-value>Lax</attribute-value>
+            </attribute>
+        </cookie-config>
+        <!-- never put the session id in the URL -->
+        <tracking-mode>COOKIE</tracking-mode>
+    </session-config>
+
+    <!-- Friendly error pages: no stack traces are ever shown to users -->
+    <error-page>
+        <error-code>403</error-code>
+        <location>/WEB-INF/jsp/error.jsp</location>
+    </error-page>
+    <error-page>
+        <error-code>404</error-code>
+        <location>/WEB-INF/jsp/error.jsp</location>
+    </error-page>
+    <error-page>
+        <error-code>405</error-code>
+        <location>/WEB-INF/jsp/error.jsp</location>
+    </error-page>
+    <error-page>
+        <exception-type>java.lang.Throwable</exception-type>
+        <location>/WEB-INF/jsp/error.jsp</location>
+    </error-page>
+
+    <jsp-config>
+        <jsp-property-group>
+            <url-pattern>*.jsp</url-pattern>
+            <page-encoding>UTF-8</page-encoding>
+            <trim-directive-whitespaces>true</trim-directive-whitespaces>
+        </jsp-property-group>
+    </jsp-config>
+</web-app>

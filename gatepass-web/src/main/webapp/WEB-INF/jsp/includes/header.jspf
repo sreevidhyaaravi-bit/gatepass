@@ -1,0 +1,22 @@
+<%-- Top bar: app name, who is logged in, and the logout button. --%>
+<header class="topbar">
+    <div class="topbar-inner">
+        <a class="brand" href="${ctx}/">
+            <span class="brand-mark" aria-hidden="true">GP</span>
+            <span class="brand-text">
+                <strong>Digital Gate Pass</strong>
+                <small>Campus Exit Management System</small>
+            </span>
+        </a>
+        <c:if test="${not empty sessionScope.user}">
+            <div class="topbar-user">
+                <span class="user-name"><c:out value="${sessionScope.user.name}"/></span>
+                <span class="role-chip"><c:out value="${sessionScope.user.role}"/></span>
+                <form method="post" action="${ctx}/logout">
+                    <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
+                    <button type="submit" class="btn btn-light btn-sm">Log out</button>
+                </form>
+            </div>
+        </c:if>
+    </div>
+</header>

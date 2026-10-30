@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Student + warden website: Java Servlets + JSP, runs on Apache Tomcat 10.1.
+  "mvn package" produces target/ROOT.war (deploy to Tomcat's webapps folder => http://localhost:8080/)
+  and the same thing unpacked in target/ROOT/.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.gatepass</groupId>
+        <artifactId>gatepass-parent</artifactId>
+        <version>1.0.0</version>
+    </parent>
+
+    <artifactId>gatepass-web</artifactId>
+    <packaging>war</packaging>
+    <name>Gate Pass Website (student + warden)</name>
+
+    <dependencies>
+        <!-- the shared rules, DAOs and models -->
+        <dependency>
+            <groupId>com.gatepass</groupId>
+            <artifactId>gatepass-core</artifactId>
+        </dependency>
+
+        <!-- "provided": Tomcat already contains these, so they are NOT copied into the WAR -->
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.servlet.jsp</groupId>
+            <artifactId>jakarta.servlet.jsp-api</artifactId>
+        </dependency>
+
+        <!-- JSTL (<c:forEach>, <c:out> ...): Tomcat does not include it, so it goes into WEB-INF/lib -->
+        <dependency>
+            <groupId>jakarta.servlet.jsp.jstl</groupId>
+            <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.web</groupId>
+            <artifactId>jakarta.servlet.jsp.jstl</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>ROOT</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+                    <failOnMissingWebXml>true</failOnMissingWebXml>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

@@ -19,6 +19,9 @@ public final class AppConfig {
     /** Name of the SQLite database file. */
     public static final String DB_FILE_NAME = "gatepass.db";
 
+    /** Name of the local SMTP settings file (never committed to Git, see .gitignore). */
+    public static final String MAIL_FILE_NAME = "gatepass-mail.properties";
+
     private AppConfig() {
         // utility class: nobody should create objects of it
     }
@@ -43,5 +46,27 @@ public final class AppConfig {
         }
         return Paths.get(System.getProperty("user.home"), "gatepass-data", DB_FILE_NAME)
                 .toAbsolutePath().normalize();
+    }
+
+    /**
+     * Resolves the SMTP settings file: the ONE place where email configuration lives.
+     * Order of preference:
+     * <ol>
+     *   <li>JVM option {@code -Dgatepass.mail.config=/some/where/gatepass-mail.properties}</li>
+     *   <li>environment variable {@code GATEPASS_MAIL_CONFIG}</li>
+     *   <li>default: the same folder as gatepass.db, e.g. {@code <home>/gatepass-data/gatepass-mail.properties}</li>
+     * </ol>
+     * Keeping it next to the database means the website and the guard app always read the same
+     * settings, and the file stays outside the project folder (so it cannot be committed by accident).
+     */
+    public static Path mailSettingsPath() {
+        String configured = System.getProperty("gatepass.mail.config");
+        if (configured == null || configured.isBlank()) {
+            configured = System.getenv("GATEPASS_MAIL_CONFIG");
+        }
+        if (configured != null && !configured.isBlank()) {
+            return Paths.get(configured.trim()).toAbsolutePath().normalize();
+        }
+        return databasePath().resolveSibling(MAIL_FILE_NAME);
     }
 }

@@ -7,3 +7,4 @@ gatepass-data/
 gatepass-mail.properties
 .idea/
 *.iml
+.DS_Store

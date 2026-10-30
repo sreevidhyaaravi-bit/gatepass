@@ -106,6 +106,23 @@ public class UserDAO {
         }
     }
 
+    /**
+     * Changes the email address of a student's parent (demo setup: point it at an inbox the team
+     * can open). Returns false when the college ID does not exist.
+     */
+    public boolean updateParentEmail(String collegeId, String newEmail) {
+        String sql = "UPDATE parents SET email = ? "
+                + "WHERE parent_id = (SELECT parent_id FROM students WHERE college_id = ?)";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, newEmail.trim());
+            ps.setString(2, collegeId.trim().toUpperCase(Locale.ROOT));
+            return ps.executeUpdate() == 1;
+        } catch (SQLException e) {
+            throw DataAccessException.from("updating the parent email", e);
+        }
+    }
+
     // ---------------------------------------------------------------- used by DatabaseInitializer
 
     /** True when the users table already has at least one row (so seeding must be skipped). */

@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
+import java.util.Locale;
 
 /**
  * The ONLY place that knows how date-times are written in the database and in forms.
@@ -17,12 +18,24 @@ public final class DateTimeUtil {
     /** Persistence format used in every SQLite date column: e.g. 2026-10-30 14:05 */
     public static final DateTimeFormatter DB_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
+    /**
+     * Friendly format for people (web pages, guard window, parent emails): e.g. 30 Oct 2026, 02:05 PM.
+     * English month names are fixed, so a laptop set to another language shows the same text.
+     */
+    public static final DateTimeFormatter DISPLAY_FORMAT =
+            DateTimeFormatter.ofPattern("dd MMM yyyy, hh:mm a", Locale.ENGLISH);
+
     private DateTimeUtil() {
     }
 
     /** LocalDateTime -> text for the database / screens (null stays null). */
     public static String format(LocalDateTime value) {
         return value == null ? null : value.format(DB_FORMAT);
+    }
+
+    /** LocalDateTime -> friendly text for screens and emails; "-" when there is no value yet. */
+    public static String display(LocalDateTime value) {
+        return value == null ? "-" : value.format(DISPLAY_FORMAT);
     }
 
     /** Database text -> LocalDateTime (null/blank stays null). */
