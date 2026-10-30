@@ -1,0 +1,9 @@
+target/
+*.db
+*.db-wal
+*.db-shm
+gatepass-data/
+# local SMTP settings (added in stage 7) must never be committed
+gatepass-mail.properties
+.idea/
+*.iml
